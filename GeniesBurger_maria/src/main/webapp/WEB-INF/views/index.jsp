@@ -253,7 +253,7 @@ box-shadow: 5px 6px 3px -7px rgba(0,0,0,0.83);
 						<c:forEach begin="${product_paging.firstPageIndex }"
 							end="${product_paging.lastPageIndex }" var="i">
 							<li
-								class="${product_paging.pcpgvo.pageIndex == i ? 'active' : '' } ${product_paging.pcpgvo.pageIndex}">
+								class="${product_paging.pcpgvo.pageIndex == (i - 1) * product_paging.pcpgvo.countPerPage ? 'active' : '' }">
 								<a
 								href="/?pageIndex=${i }&countPerPage=${product_paging.pcpgvo.countPerPage}&range=${product_paging.pcpgvo.range}&keyword=${product_paging.pcpgvo.keyword}">
 									${i }</a>

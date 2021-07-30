@@ -79,9 +79,12 @@ public class ProductController {
 	
 	@GetMapping("/list")
 	public void list(Model model, ProductPageVO ppgvo) {
-		model.addAttribute("product_list", psv.getList(ppgvo));
 		int totalCount = psv.getTotalCount(ppgvo);
 		model.addAttribute("product_paging", new ProductPagingHandler(totalCount, ppgvo));
+		
+		int pageIndex = (ppgvo.getPageIndex() - 1) * ppgvo.getCountPerPage();
+		ppgvo.setPageIndex(pageIndex);
+		model.addAttribute("product_list", psv.getList(ppgvo));
 	}
 	
 	

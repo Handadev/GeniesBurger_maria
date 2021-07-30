@@ -47,7 +47,6 @@ public class HomeController {
 	public String home(Model model, ProductCustomerPageVO pcpgvo) {
 		int totalCount = psv.getTotalCount(pcpgvo);
 		model.addAttribute("product_paging", new ProductCustomerPagingHandler(totalCount, pcpgvo));
-		// 기본 페이지 인덱스는 1, 한페이지당 보여주는 아이템 개수는 12개
 		// 페이징jsp에서 페이지 번호를 누를 때마다 pcpgvo.getPageIndex()에 페이지 번호가 들어오는데
 		// mariaDB는 limit을 사용해서 -> limit (시작할 숫자), (출력할 아이템 개수) 이렇게 sql을 작성해야함
 		// 그래서 위에 페이징은 그대로 출력하고 페이징jsp에서 받은 pageindex 값을 아래서 수정해서

@@ -99,7 +99,7 @@ p{
 					<c:forEach begin="${product_paging.firstPageIndex }"
 						end="${product_paging.lastPageIndex }" var="i">
 						<li
-							class="page-item ${product_paging.ppgvo.pageIndex == i ? 'active' : '' }"><a
+							class="page-item ${product_paging.ppgvo.pageIndex == (i - 1) * product_paging.ppgvo.countPerPage ? 'active' : '' }"><a
 							class="page-link"
 							href="/product/list?pageIndex=${i }&countPerPage=${product_paging.ppgvo.countPerPage}&range=${product_paging.ppgvo.range}&keyword=${product_paging.ppgvo.keyword}">
 								${i }</a></li>

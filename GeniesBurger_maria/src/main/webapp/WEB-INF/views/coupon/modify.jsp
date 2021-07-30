@@ -4,8 +4,8 @@
 <jsp:include page="../adminCommon/header.jsp" />
 <jsp:include page="../adminCommon/nav.jsp" />
 <jsp:include page="../adminCommon/sidebar.jsp" />
-<c:choose>
-	<c:when test="${ses.email eq 'admin@admin.com' }">
+<%-- <c:choose>
+	<c:when test="${ses.email eq 'admin@admin.com' }"> --%>
 	<div class="container">
 		<h2>쿠폰 수정</h2>
 		<form action="/coupon/modify" method="post" id="modifyForm">
@@ -40,12 +40,12 @@
 			}
 		});
 		</script>
-		</c:when>
+		<%-- </c:when>
 			<c:otherwise>
 			<script>
 				alert("관리자 로그인이 필요한 페이지 입니다!");
 				location.replace("/member/login");
 			</script>
 			</c:otherwise>
-		</c:choose>
+		</c:choose> --%>
 <jsp:include page="../adminCommon/footer.jsp" />

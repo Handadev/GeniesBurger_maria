@@ -5,8 +5,8 @@
 <jsp:include page="../adminCommon/header.jsp" />
 <jsp:include page="../adminCommon/nav.jsp" />
 <jsp:include page="../adminCommon/sidebar.jsp" />
-<c:choose>
-	<c:when test="${ses.email eq 'admin@admin.com' }">
+<%-- <c:choose>
+	<c:when test="${ses.email eq 'admin@admin.com' }"> --%>
 	<div class="container">
 		<h2 class="float-left">쿠폰 정보</h2>
 		<a href="/coupon/list?pageIndex=${cpgvo.pageIndex}&countPerPage=${cpgvo.countPerPage}&range=${cpgvo.range}&keyword=${cpgvo.keyword}" class="btn btn-primary float-right">목록으로</a>
@@ -49,12 +49,12 @@
 			</tfoot>
 		</table>
 	</div>
-	</c:when>
+	<%-- </c:when>
 			<c:otherwise>
 			<script>
 				alert("관리자 로그인이 필요한 페이지 입니다!");
 				location.replace("/member/login");
 			</script>
 			</c:otherwise>
-		</c:choose>
+		</c:choose> --%>
 <jsp:include page="../adminCommon/footer.jsp" />

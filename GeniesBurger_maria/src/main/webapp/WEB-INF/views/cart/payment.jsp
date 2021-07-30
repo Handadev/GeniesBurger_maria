@@ -257,9 +257,8 @@ a {
 					<select name="coupon" id="coupon" style="width: 300px;">
 						<option value="">쿠폰 선택</option>
 						<c:forEach items="${myCpList }" var="cp">
-						<c:set var="enddate" value="${cp.enddate }"></c:set>
 							<option value="${cp.discount }" value2="${cp.cplno }">${cp.cpname }
-								(${cp.discount }% 할인, ${fn:substring(enddate,-1, 11)}까지)</option>
+								(${cp.discount }% 할인, ${cp.enddate }까지)</option>
 						</c:forEach>
 					</select>
 				</p>

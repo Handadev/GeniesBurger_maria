@@ -13,22 +13,23 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.myweb.domain.CouponListVO;
+import com.myweb.domain.CouponVO;
 import com.myweb.persistence.coupon.CouponDAO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "file:src/main/webapp/WEB-INF/spring/root-context.xml")
 public class CouponListDummyTest {
 	private static Logger logger = LoggerFactory.getLogger(CouponListDummyTest.class);
-	
+
 	@Inject
 	private CouponDAO cpdao;
-	
+
 //	@Test
 //	public void enddate() {
 //		cpdao.enddateList();
 //		System.out.println(cpdao.enddateList().toString());
 //	}
-	
+
 //	@Test
 //	public void selectCouponListTest() {
 //		List<CouponListVO> list = new ArrayList<CouponListVO>();
@@ -37,12 +38,15 @@ public class CouponListDummyTest {
 //			logger.info(cplvo.toString());
 //		}
 //	}
-		
-//	@Test
-//	public void insertCouponListTest() {
-//		CouponListVO cplvo = new CouponListVO();
-//		cplvo.setCpno(160);
-//		cplvo.setMno(1);
-//		cpdao.issueInsert(cplvo);
-//	}
+
+	@Test
+	public void insertCouponListTest() {
+		for (int i = 1; i < 106; i++) {
+			CouponListVO cplvo = new CouponListVO();
+			cplvo.setCpno(i);
+			cplvo.setMno(1);
+			cplvo.setEnddate("2021-08-31");
+			cpdao.issueInsert(cplvo);
+		}
+	}
 }

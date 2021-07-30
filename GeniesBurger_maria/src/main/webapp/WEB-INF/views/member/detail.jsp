@@ -71,8 +71,7 @@ h1{
               <select name="myCp" id="myCp" class="form-control">
 				<option value="">나의 쿠폰 목록</option>
 					<c:forEach items="${myCpList }" var="list">
-					<c:set var="enddate" value="${list.enddate }"></c:set>
-					<option value="${list.cpname }">${list.cpname } (${fn:substring(enddate,-1, 11)}까지)</option>
+					<option value="${list.cpname }">${list.cpname } (${list.enddate }까지)</option>
 					</c:forEach>
   				</select>
             </div>

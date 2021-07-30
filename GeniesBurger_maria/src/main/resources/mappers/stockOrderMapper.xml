@@ -7,19 +7,19 @@
 	  		<trim prefix="and (" suffix=")">
 	  			<choose>
 	  				<when test="range == 'all'.toString()">
-	  					to_char(ono) like '%'||#{keyword}||'%' or
-	  					sname like '%'||#{keyword}||'%' or
-	  					to_char(order_qty) like '%'||#{keyword}||'%' or
-	  					to_char(order_date,'YYYY-MM-DD') like '%'||#{keyword}||'%'
+	  					CONCAT(ono) like concat('%',#{keyword},'%') or
+	  					sname like concat('%',#{keyword},'%') or
+	  					CONCAT(order_qty) like concat('%',#{keyword},'%') or
+	  					DATE_FORMAT(order_date,'%Y/%m/%d') like concat('%',#{keyword},'%')
 	  				</when>
 	  				<when test="range == 'no'.toString()">
-	  					to_char(ono) like '%'||#{keyword}||'%'
+	  					CONCAT(ono) like concat('%',#{keyword},'%') 
 	  				</when>
 	  				<when test="range == 'na'.toString()">
-	  					sname like '%'||#{keyword}||'%'
+	  					sname like concat('%',#{keyword},'%') 
 	  				</when>
 	  				<when test="range == 'q'.toString()">
-	  					to_char(order_qty) like '%'||#{keyword}||'%'
+	  					CONCAT(order_qty) like concat('%',#{keyword},'%') 
 	  				</when>
 	  			</choose>
 	  		</trim>
@@ -27,13 +27,13 @@
     </sql>
     <sql id="date">
     	<if test="order_date != null and order_date != ''">
-    		and (to_char(order_date, 'YYYY-MM-DD') = #{order_date})
+    		and (DATE_FORMAT(order_date, '%Y/%m/%d') = DATE_FORMAT(#{order_date}, '%Y/%m/%d'))
     	</if>
     </sql>
        <!-- 재고 주문 -->
 	<insert id="od" parameterType="sovo">
-		insert into tbl_stock_order(ono, sname, order_qty, order_date)
-		values (seq_stock_order_ono.nextval, #{sname}, #{order_qty}, sysdate)
+		insert into tbl_stock_order(sname, order_qty)
+		values (#{sname}, #{order_qty})
 	</insert>
 	
 	<!-- 총 주문 내역 개수 -->
@@ -50,15 +50,13 @@
  	<select id="dateOdList" parameterType="sopgvo" resultType="sovo">
  	<![CDATA[
 		select ono, sname, order_qty, order_date
- 		from (select /*+INDEX_DESC(tbl_stock_order pk_stock_order)*/
- 				rownum as rn, ono, sname, order_qty, order_date
  				from tbl_stock_order where ono > 0
  	]]>
  		<include refid="date"/>
  		<include refid="search"/>
  	<![CDATA[
- 				and rownum <= #{pageIndex} * #{countPerPage})
- 		where rn > (#{pageIndex}-1) * #{countPerPage}
+ 		order by ono desc
+        limit #{pageIndex}, #{countPerPage}
  	]]>
  	</select>
 </mapper>

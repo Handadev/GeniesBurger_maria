@@ -6,21 +6,21 @@
   <!-- 등록된 쿠폰 리스트 서치 -->
   <sql id="search">
      <if test="range != null">
-        <trim prefix="and (" suffix=")">
+        <trim prefix="and">
            <choose>
               <when test="range == 'nd'.toString()">
-                 to_char(cpno) like '%'||#{keyword}||'%' or
-                 cpname like '%'||#{keyword}||'%' or
-                 to_char(discount) like '%'||#{keyword}||'%'
+                 CONCAT(cpno) like concat('%',#{keyword},'%') or
+                 cpname like concat('%',#{keyword},'%') or
+                 CONCAT(discount) like concat('%',#{keyword},'%')
               </when>
               <when test="range == 'no'.toString()">
-                 to_char(cpno) like '%'||#{keyword}||'%'
+                 CONCAT(cpno) like concat('%',#{keyword},'%') 
               </when>
               <when test="range == 'na'.toString()">
-                 cpname like '%'||#{keyword}||'%'
+                 cpname like concat('%',#{keyword},'%') 
               </when>
               <when test="range == 'd'.toString()">
-                 to_char(discount) like '%'||#{keyword}||'%'
+                 CONCAT(discount) like concat('%',#{keyword},'%') 
               </when>
            </choose>
         </trim>
@@ -29,37 +29,37 @@
   <!-- 발급된 쿠폰 리스트 서치 -->
   <sql id="issueSearch">
   <if test="range != null">
-        <trim prefix="and (" suffix=")">
+        <trim prefix="and" suffix="">
            <choose>
               <when test="range == 'all'.toString()">
-                 to_char(cplno) like '%'||#{keyword}||'%' or
-                 to_char(cp.cpno) like '%'||#{keyword}||'%' or
-                 cp.cpname like '%'||#{keyword}||'%' or
-                 to_char(m.mno) like '%'||#{keyword}||'%' or
-                 m.email like '%'||#{keyword}||'%' or
-                 to_char(enddate,'YYYY-MM-DD') like '%'||#{keyword}||'%' or
-                 to_char(discount) like '%'||#{keyword}||'%'
+                 CONCAT(cplno) like concat('%',#{keyword},'%') or
+                 CONCAT(cp.cpno) like concat('%',#{keyword},'%') or
+                 cp.cpname like concat('%',#{keyword},'%') or
+                 CONCAT(m.mno) like concat('%',#{keyword},'%') or
+                 m.email like concat('%',#{keyword},'%') or
+                 CONCAT(enddate,'%Y/%m/%d') like concat('%',#{keyword},'%') or
+                 CONCAT(discount) like concat('%',#{keyword},'%') 
               </when>
               <when test="range == 'io'.toString()">
-                 to_char(cplno) like '%'||#{keyword}||'%'
+                 CONCAT(cplno) like concat('%',#{keyword},'%') 
               </when>
               <when test="range == 'c'.toString()">
-                 to_char(cp.cpno) like '%'||#{keyword}||'%'
+                 CONCAT(cp.cpno) like concat('%',#{keyword},'%') 
               </when>
               <when test="range == 'cn'.toString()">
-                 cp.cpname like '%'||#{keyword}||'%'
+                 cp.cpname like concat('%',#{keyword},'%')
               </when>
               <when test="range == 'm'.toString()">
-                 to_char(m.mno) like '%'||#{keyword}||'%'
+                 CONCAT(m.mno) like concat('%',#{keyword},'%')
               </when>
               <when test="range == 'e'.toString()">
-                 m.email like '%'||#{keyword}||'%'
+                 m.email like concat('%',#{keyword},'%')
               </when>
               <when test="range == 'd'.toString()">
-                 to_char(enddate,'YYYY-MM-DD') like '%'||#{keyword}||'%'
+                 CONCAT(enddate,'%Y/%m/%d') like concat('%',#{keyword},'%')
               </when>
               <when test="range == 's'.toString()">
-                 to_char(discount) like '%'||#{keyword}||'%'
+                 CONCAT(discount) like concat('%',#{keyword},'%')
               </when>
            </choose>
         </trim>
@@ -67,27 +67,25 @@
   </sql>
      <!-- 쿠폰 등록 -->
      <insert id="reg" parameterType="cpvo">
-        insert into tbl_coupon(cpno, cpname, discount)
-        values (seq_coupon_cpno.nextval, #{cpname}, #{discount})
+        insert into tbl_coupon(cpname, discount)
+        values (#{cpname}, #{discount})
      </insert>
      <!-- 쿠폰 발급 -->
    <insert id="issue" parameterType="cplvo">
-      insert into tbl_couponlist(cplno, mno, cpno, enddate)
-      values (seq_couponlist_cplno.nextval, #{mno}, #{cpno}, to_date(#{enddate},'YYYY-MM-DD'))
+      insert into tbl_couponlist(mno, cpno, enddate)
+      values (#{mno}, #{cpno}, DATE_FORMAT(#{enddate},'%Y/%m/%d'))
    </insert>
      
      <!-- 등록된 쿠폰 리스트 -->
      <select id="list" parameterType="cpgvo" resultType="cpvo">
     <![CDATA[
-       select cpno, cpname, discount
-       from (select /*+INDEX_DESC(tbl_coupon pk_coupon)*/
-             rownum as rn, cpno, cpname, discount
-             from tbl_coupon where cpno > 0
+      select cpno, cpname, discount
+      from tbl_coupon where cpno > 0
     ]]>
        <include refid="search"/>
     <![CDATA[
-             and rownum <= #{pageIndex} * #{countPerPage})
-       where rn > (#{pageIndex}-1) * #{countPerPage}
+      order by cpno desc
+      limit #{pageIndex}, #{countPerPage}
     ]]>
     </select>
     <!-- 쿠폰 개수 -->
@@ -117,10 +115,7 @@
      <!-- 발급된 쿠폰 리스트 -->
      <select id="issueList" parameterType="cpgvo" resultType="cplvo">
     <![CDATA[
-    SELECT rownum, cplno, cpno, cpname, mno, email, enddate, discount
-	 FROM (SELECT rownum AS rn, cplno, cpno, cpname, mno, email, enddate, discount
-        from(SELECT
-        cpl.cplno AS cplno, cpl.cpno AS cpno, cp.cpname AS cpname, cpl.mno AS mno, m.email AS email, enddate, discount
+      SELECT cpl.cplno AS cplno, cpl.cpno AS cpno, cp.cpname AS cpname, cpl.mno AS mno, m.email AS email, enddate, discount
       FROM TBL_COUPONLIST cpl INNER JOIN TBL_COUPON cp
       ON cpl.CPNO = cp.CPNO
       JOIN TBL_MEMBER m 
@@ -128,9 +123,8 @@
     ]]>
        <include refid="issueSearch"/>
     <![CDATA[
-      ORDER BY cplno desc)
-      where rownum <= #{pageIndex} * #{countPerPage})
-      where rn > (#{pageIndex}-1) * #{countPerPage}
+      order by cplno desc
+      limit #{pageIndex}, #{countPerPage}
    ]]>
      </select>
      <!-- 쿠폰 발급을 위한 리스트 -->

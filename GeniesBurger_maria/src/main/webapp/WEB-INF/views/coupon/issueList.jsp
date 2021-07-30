@@ -1,12 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %> 
 <jsp:include page="../adminCommon/header.jsp" />
 <jsp:include page="../adminCommon/nav.jsp" />
 <jsp:include page="../adminCommon/sidebar.jsp" />
-<c:choose>
-	<c:when test="${ses.email eq 'admin@admin.com' }">
+<%-- <c:choose>
+	<c:when test="${ses.email eq 'admin@admin.com' }"> --%>
 	<div class="container">
 	<h2 class="float-left">발급된 쿠폰 리스트</h2>
 		<a href="/coupon/list" class="btn btn-primary float-right ml-3">쿠폰 목록</a>
@@ -53,7 +52,6 @@
 	    	<c:when test="${issueList.size() ne 0 }">
 	    		<tbody>
 	  		 	 <c:forEach items="${issueList }" var="cplvo">
-	  		 	 <c:set var="enddate" value="${cplvo.enddate }"></c:set>
 	    		  <tr>
 	     		   <td>${cplvo.cplno }</td>
 	     		   <td>${cplvo.cpno }</td>
@@ -61,7 +59,7 @@
 	     		   <td>${cplvo.mno }</td>
 	     		   <td>${cplvo.email }</td>
 	     		   <td>${cplvo.discount }%</td>
-	     		   <td>${fn:substring(enddate,-1, 11)}</td>
+	     		   <td>${cplvo.enddate}</td>
 	     		   <td>
 	     		   <button type="button" id="cancelBtn" data-cplno="${cplvo.cplno }" class="btn btn-danger">취소</button>
 	     		   </td>
@@ -108,12 +106,12 @@
 		coupon_cancel(cplno_val);
 	 });
   </script>
-  </c:when>
+  <%-- </c:when>
 			<c:otherwise>
 			<script>
 				alert("관리자 로그인이 필요한 페이지 입니다!");
 				location.replace("/member/login");
 			</script>
 			</c:otherwise>
-		</c:choose>
+		</c:choose> --%>
 <jsp:include page="../adminCommon/footer.jsp" />

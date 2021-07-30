@@ -48,8 +48,12 @@ public class CouponController {
 	@GetMapping("/issueList")
 	public void issueList(Model model, CouponPageVO cpgvo) {
 		model.addAttribute("issueList", cpsv.getIssueList(cpgvo));
-		 int totalCount = cpsv.getIssueTotalCount(cpgvo); 
-		 model.addAttribute("cpghdl", new CouponPagingHandler(totalCount, cpgvo));
+		int totalCount = cpsv.getIssueTotalCount(cpgvo); 
+		model.addAttribute("cpghdl", new CouponPagingHandler(totalCount, cpgvo));
+		 
+		int pageIndex = (cpgvo.getPageIndex() - 1) * cpgvo.getCountPerPage();
+		cpgvo.setPageIndex(pageIndex);
+	    model.addAttribute("issueList", cpsv.getIssueList(cpgvo));
 	}
 	
 	@PostMapping("/issue")
@@ -89,9 +93,12 @@ public class CouponController {
 	
 	@GetMapping("/list")
 	public void list(Model model, CouponPageVO cpgvo) {
-		model.addAttribute("list", cpsv.getList(cpgvo));
 		int totalCount = cpsv.getTotalCount(cpgvo);
 		model.addAttribute("cpghdl", new CouponPagingHandler(totalCount, cpgvo));
+		
+		int pageIndex = (cpgvo.getPageIndex() - 1) * cpgvo.getCountPerPage();
+		cpgvo.setPageIndex(pageIndex);
+		model.addAttribute("list", cpsv.getList(cpgvo));
 	}
 	
 	@PostMapping("/register")

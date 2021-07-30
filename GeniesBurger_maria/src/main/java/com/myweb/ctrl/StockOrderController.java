@@ -31,10 +31,12 @@ public class StockOrderController {
 	@GetMapping("/dateList")
 	public void dateList(StockOrderPageVO sopgvo, Model model) {
 		logger.info(sopgvo.getOrder_date());
-		model.addAttribute("dateList", sosv.dateList(sopgvo));
 		int totalCount = sosv.getTotalCount(sopgvo);
 		model.addAttribute("spghdl", new StockOrderPagingHandler(totalCount, sopgvo));
 		
+		int pageIndex = (sopgvo.getPageIndex() - 1) * sopgvo.getCountPerPage();
+		sopgvo.setPageIndex(pageIndex);
+		model.addAttribute("dateList", sosv.dateList(sopgvo));
 	}
 
 	@PostMapping("/register")

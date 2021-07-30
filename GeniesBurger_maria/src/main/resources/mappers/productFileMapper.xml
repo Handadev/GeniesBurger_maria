@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="ProductFileMapper">
+ 	<sql id="bc">
+ 		from tbl_productfile where pno = #{pno}
+ 	</sql>
+  	<insert id="reg" parameterType="pfvo">
+  		insert into tbl_productfile values
+  		(#{puuid}, #{savedir}, #{fname}, #{pno})
+  	</insert>
+  	
+ 	<select id="list" parameterType="int" resultType="pfvo">
+ 		select * <include refid="bc"/>
+ 	</select>
+ 	
+ 	<select id="allList" resultType="pfvo">
+ 		select * from tbl_productfile
+ 	</select>
+ 	
+ 	<delete id="del" parameterType="int">
+ 		delete <include refid="bc"/>
+ 	</delete>
+ 	
+ 	<delete id="delfile" parameterType="String">
+ 		delete from tbl_productfile where puuid = #{puuid}
+ 	</delete>
+  </mapper>

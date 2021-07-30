@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="ProductMapper">
+  	<sql id="search">
+  		<if test="range != null">
+  			<trim prefix="and">
+  				<choose>
+  					<when test="range == 'propri'.toString()">
+  						title like '%'||#{keyword}||'%' or
+  						price like '%'||#{keyword}||'%' 
+  					</when>
+  					<when test="range == 'pro'.toString()">
+  						title like concat('%',#{keyword},'%')
+  					</when>
+  					<when test="range == 'pri'.toString()">
+  						price like '%'||#{keyword}||'%'
+  					</when>
+  					<when test="range == 'category'.toString()">
+  						category like '%'||#{keyword}||'%'
+  					</when>
+  				</choose>
+  			</trim>
+  		</if>
+  	</sql>
+  
+  	<insert id="reg" parameterType="pvo">
+  		insert into tbl_product (title, category, content, calorie, price, relate_pno) values
+  		(#{title}, #{category}, #{content}, #{calorie}, #{price}, #{relate_pno, jdbcType=INTEGER })
+  	</insert>
+  	
+  	<!-- 관리자 리스트 페이징 서치 -->
+  	<select id="list" parameterType="ppgvo" resultType="pvo">
+  		<![CDATA[
+  		select *
+  		from (select /*+INDEX_DESC(tbl_product pk_product)*/
+  			rownum AS rn , pno, title, price, category, sales, cansale, regdate, moddate
+			from tbl_product where pno > 0
+  		]]>
+  		<include refid="search"/>
+  		<![CDATA[
+  			and rownum <= #{pageIndex}* #{countPerPage})
+  		where rn > (#{pageIndex}-1) * #{countPerPage}
+  		]]>
+  	</select>
+  	 
+  	<!-- 관리자 리스트 서치토탈 -->
+  	<select id="totalcount" parameterType="ppgvo" resultType="int">
+  		<![CDATA[
+  		select count(pno) as cnt from tbl_product where pno > 0
+  		]]>
+  		<include refid="search"/>
+  	</select>
+  	
+ 	<!-- 소비자 리스트 페이징 서치 -->
+ 	<select id="listcustomer" parameterType="pcpgvo" resultType="pvo">
+  		<![CDATA[
+  		select *
+  		from tbl_product where pno > 0 and not category = 9
+  		]]>
+  		<include refid="search"/>
+  		<![CDATA[
+  			limit #{pageIndex}, #{countPerPage}
+  		]]>
+  	</select>
+  	
+	 <!-- 소비자 리스트 서치토탈 -->
+  	<select id="totalcountcustomer" parameterType="pcpgvo" resultType="int">
+  		<![CDATA[
+  		select count(pno) as cnt from tbl_product where pno > 0 and not category = 9
+  		]]>
+  		<include refid="search"/>
+  	</select>
+  	
+
+	<!-- 추가된 상품의 pno 가져오기 사진 / 상품-재고 추가용 -->
+  	<select id="curpno" resultType="int">
+  		select max(pno) from tbl_product
+  	</select>
+  	
+  	<!-- 세트 메뉴구성을 위한 단품 리스트 -->
+  	<select id="singlemenu" resultType="pvo">
+  		select pno, title, category from tbl_product where category = 1 or category = 4
+  	</select>
+  	
+  	<!-- 상품 등록시 재고 리스트 가져오기 후에 stockmapper로 옮기기-->
+  	<select id="stocklist" resultType="svo">
+  		select sname from tbl_stock where isburger = 1 GROUP BY sname order by sname
+  	</select>
+  	
+  	<!-- 소비자 - 단품 or 세트 or 라지세트 선택 화면리스트 -->
+  	<!-- 사이드나 음료는 그냥 해당 제품이 나옴 -->
+  	<select id="selectmenu" parameterType="hashmap" resultType="pfdto">
+  		select p.pno, title, content, price, category, relate_pno, puuid, savedir, fname
+		from tbl_product p inner join tbl_productfile pf
+		on p.pno = pf.pno where p.pno > 0
+		<trim prefix="and">
+			<choose>
+				<when test="category == 1 or category == 4">
+					p.pno = #{pno} or relate_pno = #{pno}
+				</when>
+				<when test="category == 2 or category == 5">
+					relate_pno = (select relate_pno from tbl_product WHERE pno = #{pno})
+				</when>
+				<otherwise>
+					p.pno = #{pno}
+				</otherwise>
+			</choose>
+		</trim>
+		order by category desc
+  	</select>
+  	
+  	<!-- 소비자  - 단품, 세트를 선택하면 세트 / 라지 세트로 바꾸겠냐는 모달 -->
+  	<!-- 사이드나 음료는 그냥 해당 제품이 나옴 -->
+  	<select id="wantLarger" parameterType="hashmap" resultType="pfdto">
+  		select p.pno, title, content, price, category, relate_pno, puuid, savedir, fname
+		from tbl_product p inner join tbl_productfile pf
+		on p.pno = pf.pno 
+		where p.pno > 0 
+		<trim prefix="and">
+			<choose>
+				<when test="category == 1 or category == 4">
+					relate_pno = #{pno} and category = #{category} + 1
+				</when>
+				<when test="category == 2 or category == 5">
+					relate_pno = (select relate_pno from tbl_product WHERE pno = #{pno}) and category = #{category} + 1
+				</when>
+			</choose>
+		</trim>
+  	</select>
+  	
+  	<!-- 3번 모달 추가 재료 리스트 출력 -->
+  	<select id="getBurgerStock" resultType="pvo">
+  		select * from tbl_product where category = 9
+  	</select>
+  	
+  	<!-- 4번 모달 사이드 고르기에서 사이드 메뉴 출력 -->
+  	<select id="getSides" resultType="pvo">
+  		select * from tbl_product where category = 7 and cansale = 0
+  	</select>
+  	
+  	<!-- 5번 모달 음료 고르기에서 음료 메뉴 출력 -->
+  	<select id="getBeverage" resultType="pvo">
+  		select * from tbl_product where category = 8 and cansale = 0
+  	</select>
+  	
+  	<select id="detail" parameterType="int" resultType="pvo">
+  		select * from tbl_product where pno = #{pno}
+  	</select>
+  	
+  	<!-- 상품 결제시 AE에 있는 title을 가지고 pno를 출력해서 재고에서 빼야함 -->
+  	<select id="getPno" parameterType="String" resultType="int">
+  		select pno from tbl_product where title = #{title}
+  	</select>
+  	
+  	<!-- 결제 완료시 상품 결제수량 상승 -->
+  	<update id="salesUp" parameterType="hashmap">
+  		update tbl_product set
+  		sales = sales + #{sales} where pno = #{pno}
+  	</update>
+  	
+  	
+  	<update id="mod" parameterType="pvo">
+  		update tbl_product set 
+  		title = #{title}, price = #{price}, content = #{content}, category = #{category}, 
+  		calorie = #{calorie}, moddate = sysdate, cansale = #{cansale}
+  		where pno = #{pno}
+  	</update>
+  	
+  	<delete id="del" parameterType="int">
+  		delete from tbl_product where pno = #{pno}
+  	</delete>
+  	
+  	
+  	<update id="salesup" parameterType="hashmap">
+  		update tbl_product set sales = sales + #{num} where pno = #{pno}
+  	</update>
+  	
+  </mapper>

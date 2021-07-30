@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CartMapper">
+
+	<insert parameterType="cartvo" id="reg">
+		insert into tbl_cart
+		(cartno, pno, title, price, mno)
+		values (seq_cart_cartno.nextval, #{pno}, #{title}, #{price}, #{mno})
+	</insert>
+
+	<!-- 수량 중복확인 -->
+	<select id="dupleProduct" parameterType="int" resultType="int">
+		SELECT count(pno) 
+		FROM TBL_CART WHERE pno=#{pno} and mno=#{mno}
+	</select>
+
+	<delete parameterType="int" id="del">
+		delete from tbl_cart
+		where cartno=#{cartno}
+	</delete>
+	
+	<delete parameterType="int" id="delWithPno">
+		delete from tbl_cart
+		where pno=#{pno}
+	</delete>
+	
+	<!-- 수량 증가  -->
+	<update id="upQty" parameterType="hashmap">
+		update tbl_cart set
+		quantity=quantity + #{upno} where cartno=#{cartno}
+	</update>
+
+	<!-- 수량 감소 -->
+	<update id="downQty" parameterType="hashmap">
+		update tbl_cart set
+		quantity=quantity + #{downno} where cartno=#{cartno}
+	</update>
+
+	<!-- 장바구니에 상품이 중복될 떄 수량만 증가 -->	
+	<update id="upQtyDuple" parameterType="int">
+		update tbl_cart set
+		quantity=quantity + 1 where pno=#{pno}
+	</update>
+	
+	<!-- 결제창에서 해당하는 mno의 카트정보 가져오기 -->
+	<select id="pay" parameterType="int" resultType="cartvo">
+		select * from tbl_cart tc left join tbl_productfile tp 
+		on tc.pno = tp.pno where tc.mno = #{mno} order by cartno
+	</select>
+	
+	<!-- 결제완료후 해당멤버의 카트 비우기(mno) -->
+	<delete id="complete" parameterType="int">
+		delete from tbl_cart where mno=#{mno}
+	</delete>
+	
+	<!-- 결제완료 후 주문내역 가져오기 -->
+	<select id="ol" parameterType="int" resultType="cartvo">
+		SELECT * FROM tbl_cart WHERE mno=#{mno} order by cartno
+	</select>
+	
+	<!-- 카트에 제품 등록 후 add_extra 테이블에 cartno 제공을 위한 최근 cart객체 받아오기 -->
+	<select id="currCart" resultType="cartvo">
+		SELECT cartno, mno, pno FROM TBL_CART WHERE 
+		cartno = (SELECT max(cartno) FROM TBL_CART)
+	</select>
+</mapper>

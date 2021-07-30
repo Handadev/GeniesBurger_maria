@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StockMapper">
+	<sql id="search">
+		<if test="range != null">
+			<trim prefix="and (" suffix=")">
+				<choose>
+					<when test="range == 'all'.toString()">
+						to_char(sno) like '%'||#{keyword}||'%' or
+						sname like '%'||#{keyword}||'%' or
+						to_char(shelf_life) like '%'||#{keyword}||'%' or
+						to_char(stock_regdate,'YYYY-MM-DD') like '%'||#{keyword}||'%'
+					</when>
+					<when test="range == 'no'.toString()">
+						to_char(sno) like '%'||#{keyword}||'%'
+					</when>
+					<when test="range == 'na'.toString()">
+						sname like '%'||#{keyword}||'%'
+					</when>
+					<when test="range == 'q'.toString()">
+						to_char(shelf_life, 'YYYY-MM-DD') like '%'||#{keyword}||'%'
+					</when>
+				</choose>
+			</trim>
+		</if>
+	</sql>
+	<sql id="date">
+		<if test="stock_regdate != null and stock_regdate != ''">
+			and (to_char(stock_regdate, 'YYYY-MM-DD') = #{stock_regdate})
+		</if>
+	</sql>
+	
+	<!-- 재고 입력 -->
+	<insert id="reg" parameterType="svo">
+		insert into tbl_stock(sno, sname,
+		stock_qty, shelf_life, isburger) values
+		(seq_stock_sno.nextval,
+		#{sname}, #{stock_qty}, #{shelf_life}, #{isburger})
+	</insert>
+	
+	<!-- 재고 전체 리스트 -->
+	<select id="list" resultType="svo">
+		select * from tbl_stock
+	</select>
+	<!-- 재고별 전체수량 리스트 -->
+	<select id="totalCntList" resultType="svo">
+		select sname,
+		sum(stock_qty) AS stock_qty
+		from tbl_stock group by sname order by
+		sname
+	</select>
+	<!-- 특정 재고의 리스트 -->
+	<select id="oneList" parameterType="String" resultType="svo">
+		select
+		sno, sname, stock_qty, TO_CHAR(shelf_life, 'YYYY-MM-DD') as
+		shelf_life, TO_CHAR(STOCK_REGDATE, 'YYYY-MM-DD') as stock_regdate from
+		tbl_stock where sname=#{sname} order by shelf_life
+	</select>
+	<!-- 주문시 재고 증감 -->
+	<select id="upsqSno" parameterType="String" resultType="int">
+		SELECT
+		MIN(SNO) FROM TBL_STOCK WHERE shelf_life=(SELECT MIN(shelf_life) FROM
+		TBL_STOCK WHERE sname=#{sname}) and sname=#{sname}
+	</select>
+	<!-- 재고 수량 확인 -->
+	<select id="checkQty" parameterType="int" resultType="int">
+		select
+		stock_qty from tbl_stock where sno=#{sno}
+	</select>
+	<!-- 재고 유통기한 리스트 -->
+	<select id="slifeList" resultType="svo">
+		select sno, shelf_life from
+		tbl_stock
+	</select>
+	<!-- 입고 내역 리스트 -->
+	<select id="regList" parameterType="srpgvo" resultType="svo">
+ 	<![CDATA[
+		select sno, sname, shelf_life, STOCK_REGDATE
+ 		from (select /*+INDEX_DESC(tbl_stock pk_stock)*/
+ 				rownum as rn, sno, sname, shelf_life, stock_regdate
+ 				from tbl_stock where sno > 0
+ 	]]>
+		<include refid="date" />
+		<include refid="search" />
+ 	<![CDATA[
+ 				and rownum <= #{pageIndex} * #{countPerPage})
+ 		where rn > (#{pageIndex}-1) * #{countPerPage}
+ 	]]>
+	</select>
+	<!-- 입고 내역 총 개수 -->
+	<select id="totalRegCount" parameterType="srpgvo" resultType="int">
+ 	<![CDATA[
+ 		select count(sno) as cnt from tbl_stock
+ 		where sno > 0 
+ 	]]> 
+ 	    <include refid="date"/>
+ 		<include refid="search"></include>
+ 	</select>
+
+
+	<update id="mod" parameterType="svo">
+		update tbl_stock set stock_qty=#{stock_qty} where sno=#{sno}
+	</update>
+	<update id="upsq" parameterType="int">
+		update tbl_stock set stock_qty = stock_qty -1 where sno=#{sno}
+	</update>
+
+
+	<delete id="del" parameterType="int">
+		delete from tbl_stock where sno=#{sno}
+	</delete>
+	<delete id="delAll" parameterType="String">
+		delete from tbl_stock where sname=#{sname}
+	</delete>
+</mapper>

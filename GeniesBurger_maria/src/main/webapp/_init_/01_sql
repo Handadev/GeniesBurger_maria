@@ -1,0 +1,225 @@
+---------------------setting------------------------
+conn system/oracle
+
+create user geniesburger identified by 0915;
+
+grant resource, connect to geniesburger;
+
+conn geniesburger/0915;
+
+select * from tab;
+
+-----------------------회원-------------------------
+DROP TABLE tbl_member;
+
+create table tbl_member(
+mno int(11) primary key auto_increment,
+email varchar(100) not null,
+pwd varchar(1000) not null,
+name varchar(20) not null,
+mobile varchar(20) not null,
+address varchar(100) not null,
+birthday date not null,
+regdate date default current_timestamp,
+question varchar(100) not null,
+answer varchar(100) not null,
+auth varchar(10) default 'MEM',
+enabled int(1) default 1,
+failCnt int(1) default 0
+);
+
+-----------------------상품-------------------------
+DROP TABLE TBL_PRODUCT;
+
+create table tbl_product (
+pno int(11) primary key auto_increment,
+title varchar(100) not null,
+price int(10) not null,
+content varchar(100) NOT NULL,
+category int(2) not null,
+calorie int(5) NOT NULL,
+regdate date default current_timestamp,
+moddate date default current_timestamp, 
+sales int(10) default 0,
+cansale int(2) default 0,
+relate_pno int(11),
+);
+
+-----------------------상품 이미지-------------------------
+DROP TABLE tbl_productfile;
+
+create table tbl_productfile (
+puuid varchar(200) primary key,
+savedir varchar(200) not null,
+fname varchar(1000) not null,
+pno int(10)
+);
+
+-----------------------상품_재고-------------------------
+DROP TABLE tbl_product_stock;
+
+create table tbl_product_stock (
+sname varchar(100),
+pno int(11)
+);
+
+-----------------------카트-------------------------
+DROP TABLE tbl_cart;
+
+create table tbl_cart(
+cartno int(11) primary key auto_increment,
+title varchar(100) not null,
+price int(11) not null,
+quantity int(11) default 1,
+mno int(11) not null,
+pno int(11) not null
+);
+
+
+-----------------------상품 주문내역-------------------------
+-- view 생성 권한
+conn system/oracle
+grant create view to geniesburger;
+
+-- 주문 내역 view
+CREATE OR REPLACE VIEW V_MEMBER_PUR AS
+SELECT purno, tp.mno, cartno, pno, title, price, quantity, tp.regdate, tm.email, tm.name   
+FROM TBL_PURCHASE tp
+INNER JOIN TBL_MEMBER tm
+ON tp.mno = tm.mno;
+
+DROP TABLE tbl_purchase;
+
+CREATE table tbl_purchase(
+   purno int(11) primary key auto_increment,
+   mno int(11),
+   cartno int(11),
+   pno int(11),
+   title varchar(100),
+   price int(11),
+   quantity int(11),
+   regdate DATE DEFAULT current_timestamp
+);
+
+-----------------------쿠폰-------------------------
+DROP SEQUENCE seq_coupon_cpno;
+DROP TABLE tbl_coupon;
+
+create table tbl_coupon(
+cpno number(11) not null,
+cpname varchar2(100) not null,
+discount number(5) not null,
+constraint pk_coupon primary key(cpno)
+);
+
+create sequence seq_coupon_cpno
+start with 1
+increment by 1
+nocycle nocache;
+
+-----------------------쿠폰리스트-------------------------
+DROP SEQUENCE seq_couponlist_cplno;
+DROP TABLE TBL_COUPONLIST;
+
+create table tbl_couponlist(
+cplno number(11),
+mno number(11),
+cpno number(11),
+enddate DATE,
+constraint pk_couponlist primary key(cplno)
+);
+
+create sequence seq_couponlist_cplno
+start with 1
+increment by 1
+nocycle nocache;
+
+-----------------------리뷰-------------------------
+drop sequence seq_review_rno;
+drop table tbl_review;
+
+create table tbl_review(
+rno number(10),
+pno number(10) not null,
+purno number(11) NOT NULL,
+email varchar2(100) NOT NULL,
+title varchar2(100) NOT NULL,
+rcontent varchar2(2000) not null,
+rdate date default sysdate not null,
+ruuid varchar2(2000),
+rsavedir varchar2(2000),
+rfname varchar2(1000),
+rftype number(1) default 0,
+constraint pk_rno primary key(rno)
+);
+
+create sequence seq_review_rno
+start with 1
+increment by 1
+nocycle nocache;
+
+-----------------------관리자 댓글-------------------------
+drop sequence seq_adcomment_acno;
+drop table tbl_admincomment;
+
+CREATE TABLE TBL_ADMINCOMMENT (
+acno number(10),
+rno number(10) NOT NULL,
+adcomment varchar2(1000) NOT null,
+addate DATE DEFAULT sysdate NOT NULL,
+CONSTRAINT pk_acno PRIMARY key(acno)
+);
+
+CREATE SEQUENCE seq_adcomment_acno
+START WITH 1
+INCREMENT BY 1
+nocycle nocache;
+
+----------------------재고-------------------------
+drop sequence seq_stock_sno;
+drop table tbl_stock;
+
+create table tbl_stock (
+sno number(11),
+sname varchar2(100) not null,
+stock_qty number(11) not null,
+shelf_life date not null,
+stock_regdate date default sysdate,
+isburger number(2) DEFAULT 0,
+constraint pk_stock primary key(sno)
+);
+
+create sequence seq_stock_sno
+start with 1
+increment by 1
+nocycle nocache;
+
+-----------------------재고 주문-------------------------
+DROP SEQUENCE seq_stock_order_ono;
+DROP TABLE tbl_stock_order;
+
+CREATE TABLE tbl_stock_order(
+ono NUMBER(11),
+sname varchar2(100) NOT NULL,
+order_qty NUMBER(11) NOT NULL,
+order_date DATE DEFAULT sysdate,
+CONSTRAINT pk_stock_order PRIMARY KEY(ono)
+);
+
+CREATE SEQUENCE seq_stock_order_ono
+START WITH 1
+INCREMENT BY 1
+nocycle nocache;
+
+--------------------상품 주문시 재료 추가-----------------------
+DROP TABLE TBL_ADD_EXTRA;
+
+CREATE TABLE tbl_add_extra (
+aeno int(11) primary key auto_increment,
+mno int(11),
+pno int(11),
+price int(11),
+title varchar(100),
+quantity int(11) default 1,
+cartno int(11)
+);                    

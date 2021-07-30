@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="CouponMapper">
+  <!-- 등록된 쿠폰 리스트 서치 -->
+  <sql id="search">
+     <if test="range != null">
+        <trim prefix="and (" suffix=")">
+           <choose>
+              <when test="range == 'nd'.toString()">
+                 to_char(cpno) like '%'||#{keyword}||'%' or
+                 cpname like '%'||#{keyword}||'%' or
+                 to_char(discount) like '%'||#{keyword}||'%'
+              </when>
+              <when test="range == 'no'.toString()">
+                 to_char(cpno) like '%'||#{keyword}||'%'
+              </when>
+              <when test="range == 'na'.toString()">
+                 cpname like '%'||#{keyword}||'%'
+              </when>
+              <when test="range == 'd'.toString()">
+                 to_char(discount) like '%'||#{keyword}||'%'
+              </when>
+           </choose>
+        </trim>
+     </if>
+  </sql>
+  <!-- 발급된 쿠폰 리스트 서치 -->
+  <sql id="issueSearch">
+  <if test="range != null">
+        <trim prefix="and (" suffix=")">
+           <choose>
+              <when test="range == 'all'.toString()">
+                 to_char(cplno) like '%'||#{keyword}||'%' or
+                 to_char(cp.cpno) like '%'||#{keyword}||'%' or
+                 cp.cpname like '%'||#{keyword}||'%' or
+                 to_char(m.mno) like '%'||#{keyword}||'%' or
+                 m.email like '%'||#{keyword}||'%' or
+                 to_char(enddate,'YYYY-MM-DD') like '%'||#{keyword}||'%' or
+                 to_char(discount) like '%'||#{keyword}||'%'
+              </when>
+              <when test="range == 'io'.toString()">
+                 to_char(cplno) like '%'||#{keyword}||'%'
+              </when>
+              <when test="range == 'c'.toString()">
+                 to_char(cp.cpno) like '%'||#{keyword}||'%'
+              </when>
+              <when test="range == 'cn'.toString()">
+                 cp.cpname like '%'||#{keyword}||'%'
+              </when>
+              <when test="range == 'm'.toString()">
+                 to_char(m.mno) like '%'||#{keyword}||'%'
+              </when>
+              <when test="range == 'e'.toString()">
+                 m.email like '%'||#{keyword}||'%'
+              </when>
+              <when test="range == 'd'.toString()">
+                 to_char(enddate,'YYYY-MM-DD') like '%'||#{keyword}||'%'
+              </when>
+              <when test="range == 's'.toString()">
+                 to_char(discount) like '%'||#{keyword}||'%'
+              </when>
+           </choose>
+        </trim>
+     </if>
+  </sql>
+     <!-- 쿠폰 등록 -->
+     <insert id="reg" parameterType="cpvo">
+        insert into tbl_coupon(cpno, cpname, discount)
+        values (seq_coupon_cpno.nextval, #{cpname}, #{discount})
+     </insert>
+     <!-- 쿠폰 발급 -->
+   <insert id="issue" parameterType="cplvo">
+      insert into tbl_couponlist(cplno, mno, cpno, enddate)
+      values (seq_couponlist_cplno.nextval, #{mno}, #{cpno}, to_date(#{enddate},'YYYY-MM-DD'))
+   </insert>
+     
+     <!-- 등록된 쿠폰 리스트 -->
+     <select id="list" parameterType="cpgvo" resultType="cpvo">
+    <![CDATA[
+       select cpno, cpname, discount
+       from (select /*+INDEX_DESC(tbl_coupon pk_coupon)*/
+             rownum as rn, cpno, cpname, discount
+             from tbl_coupon where cpno > 0
+    ]]>
+       <include refid="search"/>
+    <![CDATA[
+             and rownum <= #{pageIndex} * #{countPerPage})
+       where rn > (#{pageIndex}-1) * #{countPerPage}
+    ]]>
+    </select>
+    <!-- 쿠폰 개수 -->
+     <select id="tc" parameterType="cpgvo" resultType="int">
+    <![CDATA[
+       select count(cpno) as cnt from tbl_coupon
+       where cpno > 0 
+    ]]> 
+       <include refid="search"></include>
+    </select>
+    <!-- 발급된 쿠폰 개수 -->
+     <select id="itc" parameterType="cpgvo" resultType="int">
+    <![CDATA[
+       SELECT count(cplno)
+      FROM TBL_COUPONLIST cpl INNER JOIN TBL_COUPON cp
+      ON cpl.CPNO = cp.CPNO
+      JOIN TBL_MEMBER m 
+      ON cpl.MNO = m.MNO
+       where cplno > 0 
+    ]]> 
+       <include refid="issueSearch"></include>
+    </select>
+    <!-- 쿠폰 정보 -->
+     <select id="detail" parameterType="int" resultType="cpvo">
+        select * from tbl_coupon where cpno=#{cpno}
+     </select>
+     <!-- 발급된 쿠폰 리스트 -->
+     <select id="issueList" parameterType="cpgvo" resultType="cplvo">
+    <![CDATA[
+    SELECT rownum, cplno, cpno, cpname, mno, email, enddate, discount
+	 FROM (SELECT rownum AS rn, cplno, cpno, cpname, mno, email, enddate, discount
+        from(SELECT
+        cpl.cplno AS cplno, cpl.cpno AS cpno, cp.cpname AS cpname, cpl.mno AS mno, m.email AS email, enddate, discount
+      FROM TBL_COUPONLIST cpl INNER JOIN TBL_COUPON cp
+      ON cpl.CPNO = cp.CPNO
+      JOIN TBL_MEMBER m 
+      ON cpl.MNO = m.MNO where cplno > 0
+    ]]>
+       <include refid="issueSearch"/>
+    <![CDATA[
+      ORDER BY cplno desc)
+      where rownum <= #{pageIndex} * #{countPerPage})
+      where rn > (#{pageIndex}-1) * #{countPerPage}
+   ]]>
+     </select>
+     <!-- 쿠폰 발급을 위한 리스트 -->
+     <select id="issueCpList" resultType="cpvo">
+        select * from tbl_coupon
+     </select>
+     <!-- 나의 쿠폰 리스트 -->
+     <select id="myCpList" parameterType="int" resultType="cplvo">
+        SELECT cpl.cplno, cpl.cpno, cp.cpname, cpl.mno, m.email, discount, enddate
+      FROM TBL_COUPONLIST cpl INNER JOIN TBL_COUPON cp
+      ON cpl.CPNO = cp.CPNO
+      JOIN TBL_MEMBER m 
+      ON cpl.MNO = M.MNO
+      AND cpl.MNO = #{mno}
+     </select>
+     
+     <!-- 쿠폰 유효기간 리스트 -->
+     <select id="enddate" resultType="cplvo">
+     	select cplno, enddate from tbl_couponlist
+     </select>
+     
+     <!-- 쿠폰 수정 -->
+     <update id="mod" parameterType="cpvo">
+        update tbl_coupon set cpname=#{cpname}, discount=#{discount}
+       where cpno=#{cpno}
+     </update>
+     
+     <!-- 쿠폰 수정 -->
+     <delete id="del" parameterType="int">
+        delete from tbl_coupon where cpno=#{cpno}
+     </delete>
+     <!-- 쿠폰 발급 취소 -->
+     <delete id="cancel" parameterType="int">
+        delete from tbl_couponlist where cplno=#{cplno}
+     </delete>
+     
+  </mapper>

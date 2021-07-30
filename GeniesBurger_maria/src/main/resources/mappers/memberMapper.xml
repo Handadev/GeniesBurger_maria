@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MemberMapper">
+	<sql id="search">
+		<if test="range != null">
+			<trim prefix="and (" suffix=")">
+				<choose>
+					<when test="range == 'en'.toString()">
+						email like '%'||#{keyword}||'%' or name like '%'||#{keyword}||'%'
+					</when>
+					<when test="range == 'e'.toString()">
+						email like '%'||#{keyword}||'%'
+					</when>
+					<when test="range == 'n'.toString()">
+						name like '%'||#{keyword}||'%'
+					</when>
+					<when test="range == 'm'.toString()">
+						mobile like '%'||#{keyword}||'%'
+					</when>
+					<when test="range == 'a'.toString()">
+						address like '%'||#{keyword}||'%'
+					</when>
+				</choose>
+			</trim>
+		</if>
+	</sql>
+   <insert id="reg" parameterType="mvo">
+      insert into tbl_member(mno, email, pwd, name, mobile, address, birthday, question, answer)
+      values (seq_member_mno.nextval, #{email}, #{pwd}, #{name}, #{mobile}, #{address}, #{birthday}, #{question}, #{answer})
+   </insert>
+   
+   <select id="check" parameterType="String" resultType="int">
+      select count(email) as cnt from tbl_member where email=#{email}
+   </select>
+   <select id="list" resultType="mvo">
+      <![CDATA[
+ 		select rn, mno, email, name, mobile, address, birthday 
+ 		from(select /*INDEX_DESC(tbl_member pk_member)*/
+ 			rownum as rn, mno, email, name, mobile, address, birthday
+ 			from tbl_member where rownum > 0
+ 		]]>
+ 			<include refid="search"></include>
+		<![CDATA[		
+ 			and rownum <= #{pageIndex} * #{countPerPage})
+        	where rn > (#{pageIndex}-1) * #{countPerPage}
+ 		]]>
+   </select>
+   <select id="tc" parameterType="mpgvo" resultType="int">
+      <![CDATA[
+			select count(mno) FROM TBL_MEMBER WHERE mno > 0
+      ]]>  
+   </select>
+   <select id="login" parameterType="mvo" resultType="mvo">
+      select * from tbl_member where email=#{email} and pwd=#{pwd}
+   </select>
+   <select id="detail" parameterType="int" resultType="mvo">
+      select * from tbl_member where mno=#{mno}
+   </select>
+   <select id="issueMList" resultType="mvo">
+   	  select * from tbl_member
+   </select>
+   <select id="findID" parameterType="hashmap" resultType="string">
+    	select email from tbl_member where name=#{name} and mobile=#{mobile}
+	</select>
+   <select id="findQuestion" parameterType="hashmap" resultType="mvo">
+    	select email, question from tbl_member where name=#{name} and email=#{email}
+	</select>
+	<select id="findPwd" parameterType="hashmap" resultType="mvo">
+    	select email, pwd from tbl_member where email=#{email} and answer=#{answer}
+	</select>
+   
+   <update id="mod" parameterType="mvo">
+      update tbl_member set    pwd=#{pwd}, name=#{name}, 
+      mobile=#{mobile}, address=#{address}, birthday=#{birthday} 
+      where email=#{email}
+   </update>
+   
+   <delete id="del" parameterType="int">
+      delete from tbl_member where mno=#{mno}
+   </delete>
+</mapper>

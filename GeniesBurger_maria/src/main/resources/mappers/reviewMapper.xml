@@ -3,35 +3,23 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ReviewMapper">
 	<insert id="add" parameterType="rvo">
-		insert into tbl_review (rno, pno, purno, email, rcontent, title) values(seq_review_rno.nextval, #{pno}, #{purno}, #{email}, #{rcontent}, #{title})
+		insert into tbl_review (pno, purno, email, rcontent, title) values(#{pno}, #{purno}, #{purno}, #{purno}, #{purno});
 	</insert>
 	<insert id="acReg" parameterType="hashmap">
-		insert into tbl_admincomment (acno, rno, adcomment) values(seq_adcomment_acno.nextval, #{rno}, #{adcomment})
+		insert into tbl_admincomment (rno, adcomment) values(#{rno}, #{adcomment})
 	</insert>
 	
 	<select id="list" parameterType="rpgvo" resultType="rvo">
-	<![CDATA[
-		SELECT *
-		FROM (select /*+INDEX_DESC(tbl_review pk_rno)*/
-		rownum AS rn, rno, pno, email, rcontent, title, TO_CHAR(rdate,'YYYY-MM-DD') as rdate, ruuid, rsavedir, rfname, rftype 
-		FROM TBL_REVIEW WHERE rownum <= #{pageIndex} * #{countPerPage})
-       	where rn > (#{pageIndex}-1) * #{countPerPage}	
-       	]]>
+		select * from tbl_review limit #{pageIndex}, #{countPerPage};
 	</select>
 	<select id="curr" resultType="int">
 		select max(rno) FROM tbl_review
 	</select>
 	<select id="clist" parameterType="int" resultType="advo">
-		select acno, rno, adcomment,	 to_char(addate, 'YYYY-MM-DD') AS addate from tbl_admincomment where rno = #{rno}
+		select acno, rno, adcomment, ADDATE from tbl_admincomment where rno = #{rno};
 	</select>
 	<select id="myReview" parameterType="hashmap" resultType="rvo">
-		<![CDATA[
-		SELECT *
-		FROM (select /*+INDEX_DESC(tbl_review pk_rno)*/
-		rownum AS rn, rno, pno, email, rcontent, title, TO_CHAR(rdate,'YYYY-MM-DD') as rdate, ruuid, rsavedir, rfname, rftype 
-		FROM TBL_REVIEW WHERE rownum <= #{pageIndex} * #{countPerPage} AND email = #{email})
-       	where rn > (#{pageIndex}-1) * #{countPerPage}
-       	]]>
+		select * from tbl_review limit #{pageIndex}, #{countPerPage};
 	</select>
 	<select id="tc" resultType="int">
 		select count(rno) as cnt from tbl_review

@@ -13,7 +13,7 @@
 				</c:if>
 
 				<c:forEach begin="${rpghdl.firstPageIndex }" end="${rpghdl.lastPageIndex }"	var="i">
-					<li class=" ${rpghdl.rpgvo.pageIndex == i ? 'active' : ''}">
+					<li class=" ${rpghdl.rpgvo.pageIndex == (i-1) * rpghdl.rpgvo.countPerPage ? 'active' : ''}">
 						<a href="/review/myReview?pageIndex=${i }&countPerPage=${rpghdl.rpgvo.countPerPage}&email=${ses.email}">${i }</a>
 					</li>
 				</c:forEach>

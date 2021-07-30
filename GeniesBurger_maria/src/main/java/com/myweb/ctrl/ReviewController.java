@@ -51,9 +51,11 @@ public class ReviewController {
 
 	@GetMapping("/list")
 	public void list(Model model, ReviewPageVO rpgvo) {
-		model.addAttribute("list", rsv.ReviewList(rpgvo));
 		int totalCount = rsv.getTotalCount();
 		model.addAttribute("rpghdl", new ReviewPagingHandler(totalCount, rpgvo));
+		int pageIndex = (rpgvo.getPageIndex() -1) * rpgvo.getCountPerPage();
+		rpgvo.setPageIndex(pageIndex);
+		model.addAttribute("list", rsv.ReviewList(rpgvo));
 	}
 
 	@ResponseBody
@@ -74,9 +76,11 @@ public class ReviewController {
 
 	@GetMapping("/myReview")
 	public void myReview(Model model, @RequestParam("email") String email, ReviewPageVO rpgvo) {
-		model.addAttribute("list", rsv.getMyReview(email, rpgvo));
 		int totalCount = rsv.getMyTotalCount(email);
 		model.addAttribute("rpghdl", new ReviewPagingHandler(totalCount, rpgvo));
+		int pageIndex = (rpgvo.getPageIndex() -1) * rpgvo.getCountPerPage();
+		rpgvo.setPageIndex(pageIndex);
+		model.addAttribute("list", rsv.getMyReview(email, rpgvo));
 	}
 	
 	@ResponseBody

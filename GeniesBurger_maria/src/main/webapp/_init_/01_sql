@@ -135,45 +135,31 @@ increment by 1
 nocycle nocache;
 
 -----------------------리뷰-------------------------
-drop sequence seq_review_rno;
 drop table tbl_review;
 
 create table tbl_review(
-rno number(10),
-pno number(10) not null,
-purno number(11) NOT NULL,
-email varchar2(100) NOT NULL,
-title varchar2(100) NOT NULL,
-rcontent varchar2(2000) not null,
-rdate date default sysdate not null,
-ruuid varchar2(2000),
-rsavedir varchar2(2000),
-rfname varchar2(1000),
-rftype number(1) default 0,
-constraint pk_rno primary key(rno)
+rno int(10) primary key auto_increment,
+pno int(10) not null,
+purno int(11) NOT NULL,
+email varchar(100) NOT NULL,
+title varchar(100) NOT NULL,
+rcontent varchar(2000) not null,
+rdate date default current_timestamp not null,
+ruuid varchar(2000),
+rsavedir varchar(2000),
+rfname varchar(1000),
+rftype tinyint(1) default 0
 );
 
-create sequence seq_review_rno
-start with 1
-increment by 1
-nocycle nocache;
-
 -----------------------관리자 댓글-------------------------
-drop sequence seq_adcomment_acno;
 drop table tbl_admincomment;
 
 CREATE TABLE TBL_ADMINCOMMENT (
-acno number(10),
-rno number(10) NOT NULL,
-adcomment varchar2(1000) NOT null,
-addate DATE DEFAULT sysdate NOT NULL,
-CONSTRAINT pk_acno PRIMARY key(acno)
+acno int(10) primary key auto_increment,
+rno int(10) NOT NULL,
+adcomment varchar(1000) NOT null,
+addate DATE DEFAULT current_timestamp NOT NULL
 );
-
-CREATE SEQUENCE seq_adcomment_acno
-START WITH 1
-INCREMENT BY 1
-nocycle nocache;
 
 ----------------------재고-------------------------
 drop sequence seq_stock_sno;

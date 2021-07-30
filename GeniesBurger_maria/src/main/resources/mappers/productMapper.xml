@@ -7,17 +7,17 @@
   			<trim prefix="and">
   				<choose>
   					<when test="range == 'propri'.toString()">
-  						title like '%'||#{keyword}||'%' or
-  						price like '%'||#{keyword}||'%' 
+  						title like concat('%',#{keyword},'%') or
+  						price like concat('%',#{keyword},'%') 
   					</when>
   					<when test="range == 'pro'.toString()">
   						title like concat('%',#{keyword},'%')
   					</when>
   					<when test="range == 'pri'.toString()">
-  						price like '%'||#{keyword}||'%'
+  						price like concat('%',#{keyword},'%')
   					</when>
   					<when test="range == 'category'.toString()">
-  						category like '%'||#{keyword}||'%'
+  						category like concat('%',#{keyword},'%')
   					</when>
   				</choose>
   			</trim>
@@ -33,14 +33,11 @@
   	<select id="list" parameterType="ppgvo" resultType="pvo">
   		<![CDATA[
   		select *
-  		from (select /*+INDEX_DESC(tbl_product pk_product)*/
-  			rownum AS rn , pno, title, price, category, sales, cansale, regdate, moddate
-			from tbl_product where pno > 0
+  		from tbl_product where pno > 0
   		]]>
   		<include refid="search"/>
   		<![CDATA[
-  			and rownum <= #{pageIndex}* #{countPerPage})
-  		where rn > (#{pageIndex}-1) * #{countPerPage}
+  			limit #{pageIndex}, #{countPerPage}
   		]]>
   	</select>
   	 
@@ -163,7 +160,7 @@
   	<update id="mod" parameterType="pvo">
   		update tbl_product set 
   		title = #{title}, price = #{price}, content = #{content}, category = #{category}, 
-  		calorie = #{calorie}, moddate = sysdate, cansale = #{cansale}
+  		calorie = #{calorie}, moddate = current_timestamp, cansale = #{cansale}
   		where pno = #{pno}
   	</update>
   	

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -142,7 +143,7 @@ public class MemberController {
 		MemberVO loginAccount = msv.login(mvo);
 		if (loginAccount != null) {
 			ses.setAttribute("ses", loginAccount);
-			ses.setMaxInactiveInterval(10 * 60);
+			ses.setMaxInactiveInterval(30 * 60);
 		}
 		reAttr.addFlashAttribute("result", ses.getAttribute("ses") != null ? "로그인 성공~" : "로그인 실패!");
 		return ses.getAttribute("ses") != null ? "redirect:/" : "redirect:/member/login";

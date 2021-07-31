@@ -107,8 +107,10 @@ $(document).on("click",".cancel",function() {
 });
 
 $(document).on("click",".adReg",function() {
+	let writer = $(this).prev("textarea").prev("input").prev("div").find("b").text().trim();
 	let adComment = $(this).siblings("textarea").val();
 	let rno = $(this).siblings("input").val();
+	// (review,관리자,유저)	
 	$.ajax({
 		url : "/review/addAdComment",
 		type : "post",
@@ -119,6 +121,7 @@ $(document).on("click",".adReg",function() {
 	}).done(function(result) {
 		if(result == 1){
 			alert("댓글이 등록되었습니당 ㅎㅎ");
+			socket.send("점장님이 내 리뷰에 댓글을 달았습니다.," + writer);
 			location.reload();
 		} else {
 			alert("댓글 등록 실패!! ㅠㅜ");

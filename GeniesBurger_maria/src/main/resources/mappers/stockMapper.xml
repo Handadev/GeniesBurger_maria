@@ -33,10 +33,9 @@
 	
 	<!-- 재고 입력 -->
 	<insert id="reg" parameterType="svo">
-		insert into tbl_stock(sno, sname,
+		insert into tbl_stock(sname,
 		stock_qty, shelf_life, isburger) values
-		(seq_stock_sno.nextval,
-		#{sname}, #{stock_qty}, #{shelf_life}, #{isburger})
+		(#{sname}, #{stock_qty}, #{shelf_life}, #{isburger})
 	</insert>
 	
 	<!-- 재고 전체 리스트 -->

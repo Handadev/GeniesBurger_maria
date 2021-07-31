@@ -4,65 +4,56 @@
 <mapper namespace="PurchaseMapper">
 	<sql id="search">
 		<if test="range != null">
-			<trim prefix="and (" suffix=")">
+			<trim prefix="and">
 				<choose>
 					<when test="range == 'en'.toString()">
-						email like '%'||#{keyword}||'%' or name like
-						'%'||#{keyword}||'%'
+						email like concat('%',#{keyword},'%') or 
+						name like concat('%',#{keyword},'%')
 					</when>
 					<when test="range == 'e'.toString()">
-						email like '%'||#{keyword}||'%'
+						email like concat('%',#{keyword},'%')
 					</when>
 					<when test="range == 'n'.toString()">
-						name like '%'||#{keyword}||'%'
+						name like concat('%',#{keyword},'%')
 					</when>
 					<when test="range == 't'.toString()">
-						title like '%'||#{keyword}||'%'
+						title like concat('%',#{keyword},'%')
 					</when>
 					<when test="range == 'p'.toString()">
-						price like '%'||#{keyword}||'%'
+						price like concat('%',#{keyword},'%')
 					</when>
 				</choose>
 			</trim>
 		</if>
 	</sql>
 	<insert id="reg" parameterType="hashmap">
-		insert into tbl_purchase(purno,
-		mno, cartno, pno, title, price, quantity)
+		insert into tbl_purchase(mno, cartno, pno, title, price, quantity)
 		values
-		(seq_purchase_purno.nextval, #{mno}, #{cartno}, #{pno}, #{title},
+		(#{mno}, #{cartno}, #{pno}, #{title},
 		#{price}, #{quantity})
 	</insert>
 
 	<select id="totalList" resultType="purvo">
 		<![CDATA[
- 		select rn, PURNO, MNO, CARTNO, PNO, TITLE, PRICE, QUANTITY, REGDATE, EMAIL, NAME  
-		from(select /*INDEX_DESC(tbl_purchase pk_purchase)*/
-		rownum as rn, PURNO, MNO, CARTNO, PNO, TITLE, PRICE, QUANTITY, REGDATE, EMAIL, NAME 
-		from V_MEMBER_PUR
-		where rownum > 0
+ 		select * 
+ 		from V_MEMBER_PUR where purno > 0 
  		]]>
 		<include refid="search"></include>
 		<![CDATA[		
- 			and rownum <= #{pageIndex} * #{countPerPage})
-        	where rn > (#{pageIndex}-1) * #{countPerPage}
+ 			limit #{pageIndex}, #{countPerPage}
  		]]>
 	</select>
 	<select id="totalListMember" parameterType="hashmap"
 		resultType="purvo">
 		<![CDATA[
- 		select rn, PURNO, MNO, CARTNO, PNO, TITLE, PRICE, QUANTITY, REGDATE, EMAIL, NAME  
-		from(select /*INDEX_DESC(tbl_purchase pk_purchase)*/
-		rownum as rn, PURNO, MNO, CARTNO, PNO, TITLE, PRICE, QUANTITY, REGDATE, EMAIL, NAME 
-		from V_MEMBER_PUR
-		where rownum > 0
- 		]]>
-		<include refid="search"></include>
-		<![CDATA[		
- 			and rownum <= #{pageIndex} * #{countPerPage})
-        	where rn > (#{pageIndex}-1) * #{countPerPage}
+		select * 
+		from V_MEMBER_PUR where purno > 0 
  		]]>
 		and mno=#{mno}
+		<include refid="search"></include>
+		<![CDATA[		
+ 			limit #{pageIndex}, #{countPerPage}
+ 		]]>
 	</select>
 
 	<select id="tc" parameterType="mpgvo" resultType="int">

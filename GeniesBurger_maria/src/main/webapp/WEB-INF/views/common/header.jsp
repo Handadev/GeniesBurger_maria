@@ -22,8 +22,10 @@
 <link rel="stylesheet" href="/resources/css/icomoon.css">
 <link rel="stylesheet" href="/resources/css/style.css">
 <link rel="shortcut icon" href="/resources/icons/favicon.png">
-<link
-	rel="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+<link rel="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+
+
 
 </head>
 <style>
@@ -43,6 +45,7 @@
 </style>
 <!-- Start header / nav  -->
 <body class="goto-here">
+ 
 	<nav
 		class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light"
 		id="ftco-navbar">
@@ -161,4 +164,6 @@
 			</div>
 		</div>
 	</div>
+	<div id="msgStack"></div>
+
 	<!-- END header / nav -->

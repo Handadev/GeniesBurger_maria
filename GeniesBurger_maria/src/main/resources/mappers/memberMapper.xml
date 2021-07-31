@@ -4,30 +4,31 @@
 <mapper namespace="MemberMapper">
 	<sql id="search">
 		<if test="range != null">
-			<trim prefix="and (" suffix=")">
+			<trim prefix="and">
 				<choose>
 					<when test="range == 'en'.toString()">
-						email like '%'||#{keyword}||'%' or name like '%'||#{keyword}||'%'
+						email like concat('%',#{keyword},'%') or 
+						name like concat('%',#{keyword},'%')
 					</when>
 					<when test="range == 'e'.toString()">
-						email like '%'||#{keyword}||'%'
+						email like concat('%',#{keyword},'%')
 					</when>
 					<when test="range == 'n'.toString()">
-						name like '%'||#{keyword}||'%'
+						name like concat('%',#{keyword},'%')
 					</when>
 					<when test="range == 'm'.toString()">
-						mobile like '%'||#{keyword}||'%'
+						mobile like concat('%',#{keyword},'%')
 					</when>
 					<when test="range == 'a'.toString()">
-						address like '%'||#{keyword}||'%'
+						address like concat('%',#{keyword},'%')
 					</when>
 				</choose>
 			</trim>
 		</if>
 	</sql>
    <insert id="reg" parameterType="mvo">
-      insert into tbl_member(mno, email, pwd, name, mobile, address, birthday, question, answer)
-      values (seq_member_mno.nextval, #{email}, #{pwd}, #{name}, #{mobile}, #{address}, #{birthday}, #{question}, #{answer})
+      insert into tbl_member(email, pwd, name, mobile, address, birthday, question, answer)
+      values (#{email}, #{pwd}, #{name}, #{mobile}, #{address}, #{birthday}, #{question}, #{answer})
    </insert>
    
    <select id="check" parameterType="String" resultType="int">
@@ -35,15 +36,12 @@
    </select>
    <select id="list" resultType="mvo">
       <![CDATA[
- 		select rn, mno, email, name, mobile, address, birthday 
- 		from(select /*INDEX_DESC(tbl_member pk_member)*/
- 			rownum as rn, mno, email, name, mobile, address, birthday
- 			from tbl_member where rownum > 0
+ 		select *
+ 		from tbl_member where mno > 0
  		]]>
  			<include refid="search"></include>
 		<![CDATA[		
- 			and rownum <= #{pageIndex} * #{countPerPage})
-        	where rn > (#{pageIndex}-1) * #{countPerPage}
+			limit #{pageIndex}, #{countPerPage}
  		]]>
    </select>
    <select id="tc" parameterType="mpgvo" resultType="int">

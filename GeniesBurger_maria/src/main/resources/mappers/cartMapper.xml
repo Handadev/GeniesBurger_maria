@@ -5,8 +5,8 @@
 
 	<insert parameterType="cartvo" id="reg">
 		insert into tbl_cart
-		(cartno, pno, title, price, mno)
-		values (seq_cart_cartno.nextval, #{pno}, #{title}, #{price}, #{mno})
+		(pno, title, price, mno)
+		values (#{pno}, #{title}, #{price}, #{mno})
 	</insert>
 
 	<!-- 수량 중복확인 -->

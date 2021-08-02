@@ -75,11 +75,6 @@
 										</tr>
 									</c:forEach>
 								</tbody>
-								<tfoot>
-									<tr>
-										<td colspan="4"><jsp:include page="paging.jsp" /></td>
-									</tr>
-								</tfoot>
 							</c:when>
 							<c:otherwise>
 								<tbody>
@@ -90,6 +85,28 @@
 							</c:otherwise>
 						</c:choose>
 					</table>
+					<div class="container page">
+						<ul class="pagination">
+							<c:if test="${srpghdl.prev }">
+								<li class="page-item"><a class="page-link"
+									href=/stock/stock_regList?pageIndex=${srpghdl.firstPageIndex-1 }&countPerPage=${srpghdl.srpgvo.countPerPage}&stock_regdate=${srpghdl.srpgvo.stock_regdate }&range=${srpghdl.srpgvo.range}&keyword=${srpghdl.srpgvo.keyword}">
+										Previous</a></li>
+							</c:if>
+							<c:forEach begin="${srpghdl.firstPageIndex }"
+								end="${srpghdl.lastPageIndex }" var="i">
+								<li
+									class="page-item ${srpghdl.srpgvo.pageIndex == (i - 1) * srpghdl.srpgvo.countPerPage ? 'active' : '' }"><a
+									class="page-link"
+									href="/stock/stock_regList?pageIndex=${i }&countPerPage=${srpghdl.srpgvo.countPerPage}&stock_regdate=${srpghdl.srpgvo.stock_regdate }&range=${srpghdl.srpgvo.range}&keyword=${srpghdl.srpgvo.keyword}">
+										${i }</a></li>
+							</c:forEach>
+							<c:if test="${srpghdl.next }">
+								<li class="page-item"><a class="page-link"
+									href="/stock/stock_regList?pageIndex=${srpghdl.lastPageIndex+1 }&countPerPage=${srpghdl.srpgvo.countPerPage}&stock_regdate=${srpghdl.srpgvo.stock_regdate }&range=${srpghdl.srpgvo.range}&keyword=${srpghdl.srpgvo.keyword}">
+										Next</a></li>
+							</c:if>
+						</ul>
+					</div>
 				</div>
 			</div>
 		</div>

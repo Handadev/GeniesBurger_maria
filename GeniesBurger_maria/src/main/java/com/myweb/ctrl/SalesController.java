@@ -91,7 +91,7 @@ public class SalesController {
 		/*-------------- 요일 별 매출 -------------*/
 		cal = Calendar.getInstance();
 		List<Integer> weekSales = new ArrayList<Integer>();
-		for (int i = 1; i <= 7; i++) {
+		for (int i = 0; i <= 6; i++) {
 			cal.setTime(new Date());
 			SimpleDateFormat sdf = new SimpleDateFormat("MM");
 			String month = sdf.format(cal.getTime());

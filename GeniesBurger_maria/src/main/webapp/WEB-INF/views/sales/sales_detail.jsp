@@ -8,18 +8,19 @@
 <!-- Container fluid  -->
 <!-- ============================================================== -->
 <div class="container-fluid">
-<div class="card-group">
+	<div class="card-group">
 		<div class="card border-right">
 			<div class="card-body">
 				<div class="d-flex d-lg-flex d-md-block align-items-center">
 					<div>
-						<h2 class="text-dark mb-1 w-100 text-truncate font-weight-medium" id="yesterday">
-							0
-						</h2>
-						<h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">어제 매출</h6>
+						<h2 class="text-dark mb-1 w-100 text-truncate font-weight-medium"
+							id="yesterday">0</h2>
+						<h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">어제
+							매출</h6>
 					</div>
 					<div class="ml-auto mt-md-3 mt-lg-0">
-						<span class="opacity-7 text-muted"><span style="font-size: 1.5em; ">￦</span></span>
+						<span class="opacity-7 text-muted"><span
+							style="font-size: 1.5em;">￦</span></span>
 					</div>
 				</div>
 			</div>
@@ -30,12 +31,16 @@
 					<div>
 						<div class="d-inline-flex align-items-center">
 							<h2 class="text-dark mb-1 font-weight-medium" id="today">0</h2>
-							<span class="badge bg-primary font-12 text-white font-weight-medium badge-pill ml-2 d-lg-block d-md-none" id="increase">+18.33%</span>
+							<span
+								class="badge bg-primary font-12 text-white font-weight-medium badge-pill ml-2 d-lg-block d-md-none"
+								id="increase">+18.33%</span>
 						</div>
-						<h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">오늘 매출</h6>
+						<h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">오늘
+							매출</h6>
 					</div>
 					<div class="ml-auto mt-md-3 mt-lg-0">
-						<span class="opacity-7 text-muted"><span style="font-size: 1.5em; ">￦</span></span>
+						<span class="opacity-7 text-muted"><span
+							style="font-size: 1.5em;">￦</span></span>
 					</div>
 				</div>
 			</div>
@@ -69,42 +74,42 @@
 			</div>
 		</div>
 		<!-- column -->
-		 <!-- column -->
-      <div class="col-lg-6">
-         <div class="card">
-            <div class="card-body">
-               <h4 class="card-title">연도별 매출</h4>
-               <div>
-                  <canvas id="line-chart3" height="150"></canvas>
-               </div>
-            </div>
-         </div>
-      </div>
-      <!-- column -->
+		<!-- column -->
+		<div class="col-lg-6">
+			<div class="card">
+				<div class="card-body">
+					<h4 class="card-title">연도별 매출</h4>
+					<div>
+						<canvas id="line-chart3" height="150"></canvas>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- column -->
 		<!-- column -->
 		<div class="col-lg-6">
 			<div class="card">
 				<div class="card-body">
 					<h4 class="card-title">이 달의 요일 별 매출</h4>
-					  <div>
-						  <canvas id="line-chart4" height="200vh" width="500vw"></canvas>
-				  	</div>
-		  		</div>
-		  	</div>
-	  	</div>
+					<div>
+						<canvas id="line-chart4" height="200vh" width="500vw"></canvas>
+					</div>
+				</div>
+			</div>
+		</div>
 		<!-- column -->
-    <!-- column -->
-      <div class="col-lg-6">
-         <div class="card">
-            <div class="card-body">
-               <h4 class="card-title">이번 달 메뉴별 판매량 Top5</h4>
-					    <div>
-					    	<canvas id="bar-chart-horizontal" height="150"></canvas>
-              </div>
-            </div>
-         </div>
-      </div>
-    <!-- column -->
+		<!-- column -->
+		<div class="col-lg-6">
+			<div class="card">
+				<div class="card-body">
+					<h4 class="card-title">이번 달 메뉴별 판매량 Top5</h4>
+					<div>
+						<canvas id="bar-chart-horizontal" height="150"></canvas>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- column -->
 	</div>
 	<!-- ============================================================== -->
 	<!-- End PAge Content -->
@@ -322,9 +327,9 @@ function monthCul(month) {
 	new Chart(document.getElementById("line-chart4"), {
 		type : 'pie',
 		data : {
-			labels : ["일","월","화","수","목","금","토"],
+			labels : ["월","화","수","목","금","토", "일"],
 			datasets : [ {
-			data : [ weekSalesList[0], weekSalesList[1], weekSalesList[2], weekSalesList[3], weekSalesList[4], weekSalesList[5], weekSalesList[6] ],
+			data : [weekSalesList[1], weekSalesList[2], weekSalesList[3], weekSalesList[4], weekSalesList[5], weekSalesList[6], weekSalesList[0]],
 						backgroundColor: ['rgb(255, 99, 132)', 'rgb(255, 159, 64)', 'rgb(255, 205, 86)', 'rgb(75, 192, 192)', 'rgb(54, 162, 235)', 'rgb(95, 118, 232)', 'rgb(153, 102, 255)'],
 					} ]
 				},

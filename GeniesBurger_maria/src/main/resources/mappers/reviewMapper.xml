@@ -3,7 +3,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ReviewMapper">
 	<insert id="add" parameterType="rvo">
-		insert into tbl_review (pno, purno, email, rcontent, title) values(#{pno}, #{purno}, #{purno}, #{purno}, #{purno});
+		insert into tbl_review (pno, purno, email, rcontent, title) values(#{pno}, #{purno}, #{email}, #{rcontent}, #{title});
 	</insert>
 	<insert id="acReg" parameterType="hashmap">
 		insert into tbl_admincomment (rno, adcomment) values(#{rno}, #{adcomment})

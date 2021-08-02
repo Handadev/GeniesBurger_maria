@@ -4,22 +4,22 @@
 <mapper namespace="StockMapper">
 	<sql id="search">
 		<if test="range != null">
-			<trim prefix="and (" suffix=")">
+			<trim prefix="and">
 				<choose>
 					<when test="range == 'all'.toString()">
-						to_char(sno) like '%'||#{keyword}||'%' or
-						sname like '%'||#{keyword}||'%' or
-						to_char(shelf_life) like '%'||#{keyword}||'%' or
-						to_char(stock_regdate,'YYYY-MM-DD') like '%'||#{keyword}||'%'
+						sno like concat('%',#{keyword},'%') or
+  						sname like concat('%',#{keyword},'%') or
+  						shelf_life like concat('%',#{keyword},'%') or
+  						DATE_FORMAT(stock_regdate, '%Y-%m-%d') like concat('%',#{keyword},'%')
 					</when>
 					<when test="range == 'no'.toString()">
-						to_char(sno) like '%'||#{keyword}||'%'
+						sno like concat('%',#{keyword},'%')
 					</when>
 					<when test="range == 'na'.toString()">
-						sname like '%'||#{keyword}||'%'
+						sname like concat('%',#{keyword},'%')
 					</when>
 					<when test="range == 'q'.toString()">
-						to_char(shelf_life, 'YYYY-MM-DD') like '%'||#{keyword}||'%'
+						shelf_life like concat('%',#{keyword},'%')
 					</when>
 				</choose>
 			</trim>
@@ -27,7 +27,7 @@
 	</sql>
 	<sql id="date">
 		<if test="stock_regdate != null and stock_regdate != ''">
-			and (to_char(stock_regdate, 'YYYY-MM-DD') = #{stock_regdate})
+			and (DATE_FORMAT(stock_regdate, '%Y-%m-%d') = #{stock_regdate})
 		</if>
 	</sql>
 	
@@ -52,8 +52,7 @@
 	<!-- 특정 재고의 리스트 -->
 	<select id="oneList" parameterType="String" resultType="svo">
 		select
-		sno, sname, stock_qty, TO_CHAR(shelf_life, 'YYYY-MM-DD') as
-		shelf_life, TO_CHAR(STOCK_REGDATE, 'YYYY-MM-DD') as stock_regdate from
+		sno, sname, stock_qty, shelf_life, DATE_FORMAT(stock_regdate, '%Y-%m-%d') as stock_regdate from
 		tbl_stock where sname=#{sname} order by shelf_life
 	</select>
 	<!-- 주문시 재고 증감 -->
@@ -75,16 +74,13 @@
 	<!-- 입고 내역 리스트 -->
 	<select id="regList" parameterType="srpgvo" resultType="svo">
  	<![CDATA[
-		select sno, sname, shelf_life, STOCK_REGDATE
- 		from (select /*+INDEX_DESC(tbl_stock pk_stock)*/
- 				rownum as rn, sno, sname, shelf_life, stock_regdate
- 				from tbl_stock where sno > 0
+		select sno, sname, shelf_life, STOCK_REGDATE from tbl_stock where sno > 0
  	]]>
 		<include refid="date" />
 		<include refid="search" />
  	<![CDATA[
- 				and rownum <= #{pageIndex} * #{countPerPage})
- 		where rn > (#{pageIndex}-1) * #{countPerPage}
+ 		order by sno desc
+        limit #{pageIndex}, #{countPerPage}
  	]]>
 	</select>
 	<!-- 입고 내역 총 개수 -->

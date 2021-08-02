@@ -6,6 +6,16 @@
 		<if test="range != null">
 			<trim prefix="and">
 				<choose>
+					<when test="range == 'en'.toString()">
+						email like concat('%',#{keyword},'%') or 
+						name like concat('%',#{keyword},'%')
+					</when>
+					<when test="range == 'e'.toString()">
+						email like concat('%',#{keyword},'%')
+					</when>
+					<when test="range == 'n'.toString()">
+						name like concat('%',#{keyword},'%')
+					</when>
 					<when test="range == 't'.toString()">
 						title like concat('%',#{keyword},'%')
 					</when>
@@ -25,8 +35,8 @@
 
 	<select id="totalList" resultType="purvo">
 		<![CDATA[
-		select * 
-		from V_MEMBER_PUR where purno > 0 
+ 		select * 
+ 		from V_MEMBER_PUR where purno > 0 
  		]]>
 		<include refid="search"></include>
 		<![CDATA[		
@@ -47,43 +57,34 @@
 	</select>
 
 	<select id="tc" parameterType="mpgvo" resultType="int">
-	 <![CDATA[
       select count(purno) FROM tbl_purchase WHERE purno > 0
-      ]]> 
-      <include refid="search"/>
    </select>
    
-   <select id="tcMember" parameterType="hashmap" resultType="int">
-   			<![CDATA[
+   <select id="tcMember" parameterType="mpgvo" resultType="int">
 			select count(purno) FROM tbl_purchase WHERE purno > 0 and mno=#{mno}
-			 ]]> 
-			<include refid="search"/>
    </select>
    
    <select id="dateSales" parameterType="String" resultType="int">
- 			SELECT NVL(sum(price),0) FROM TBL_PURCHASE WHERE TO_CHAR(regdate, 'YYYY-MM-DD')=#{todayString}
+ 			SELECT ifnull(sum(price),0) FROM TBL_PURCHASE WHERE DATE_FORMAT(regdate, '%Y-%m-%d')=#{todayString}
    </select>
    <select id="weekSales" parameterType="hashmap" resultType="int">
- 			SELECT NVL(sum(price),0) FROM (SELECT * FROM TBL_PURCHASE WHERE TO_CHAR(regdate,'mm') = #{month}) WHERE to_char(regdate,'d')=#{i}
+ 			SELECT ifnull(sum(price),0) FROM TBL_PURCHASE WHERE DATE_FORMAT(regdate, '%m') = #{month} and DATE_FORMAT(regdate, '%w')=#{i}
    </select>
    <select id="yearSalesList" parameterType="String" resultType="int">
- 			SELECT NVL(sum(price),0) FROM TBL_PURCHASE WHERE DATE_FORMAT(regdate, '%Y')=#{yearString}
+ 			SELECT ifnull(sum(price),0) FROM TBL_PURCHASE WHERE DATE_FORMAT(regdate, '%Y')=#{yearString}
    </select>
 
 	<select id="monthSales" parameterType="String" resultType="int">
-		SELECT NVL(sum(price),0) FROM TBL_PURCHASE WHERE TO_CHAR(regdate,
-		'YYYY-MM')=#{monthString}
+		SELECT ifnull(sum(price),0) FROM TBL_PURCHASE WHERE DATE_FORMAT(regdate, '%Y-%m')=#{monthString}
 	</select>
 	
 	<select id="productSalesRate" parameterType="String"
 		resultType="purvo">
-		<![CDATA[
-		SELECT * FROM (SELECT TITLE, sum(QUANTITY) AS QUANTITY FROM
+		SELECT TITLE, sum(QUANTITY) AS QUANTITY FROM
 		TBL_PURCHASE
-		WHERE TO_CHAR(regdate, 'YYYY-MM')=#{monthString} GROUP BY title
+		WHERE DATE_FORMAT(regdate, '%Y-%m')=#{monthString} GROUP BY title
 		ORDER BY
-		QUANTITY DESC) WHERE rownum <= 5
-		]]>
+		QUANTITY DESC limit 5
 	</select>
 
 </mapper>

@@ -17,12 +17,6 @@
                   <form action="/cart/purchaseList" class="form-inline justify-content-end">
                   <p style="font-size:2em; margin-right:450px;">총 주문내역</p>
                      <select class="form-control" name="range">
-                        <option value="en"
-                           <c:out value="${pghdl.mpgvo.range eq 'en' ? 'selected' : '' }"/>>이메일+이름</option>
-                        <option value="e"
-                           <c:out value="${pghdl.mpgvo.range eq 'e' ? 'selected' : '' }"/>>이메일</option>
-                        <option value="n"
-                           <c:out value="${pghdl.mpgvo.range eq 'n' ? 'selected' : '' }"/>>이름</option>
                         <option value="t"
                            <c:out value="${pghdl.mpgvo.range eq 't' ? 'selected' : '' }"/>>상품명</option>
                         <option value="p"

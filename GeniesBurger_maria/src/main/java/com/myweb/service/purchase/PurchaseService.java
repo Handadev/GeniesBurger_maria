@@ -41,7 +41,6 @@ public class PurchaseService implements PurchaseServiceRule {
 		List<PurchaseVO> purList = pdao.selectList(mpgvo, mno);
 		for (PurchaseVO purVO : purList) {
 			int purno = purVO.getPurno();
-			logger.info("purno >>>>>>>>>>>>>>>" + purno);
 			List<ReviewVO> rlist = rdao.purList(purno);
 			purVO.setRlist(rlist);
 			list.add(purVO);

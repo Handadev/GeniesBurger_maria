@@ -30,11 +30,12 @@
 					<div class="col" style="margin-bottom: 10px;">
 						<form action="/cart/purchaseListMember"	class="form-inline">
 							<p style="font-size: 2em; margin-right: 450px;">나의 주문내역</p>
-							<select class="form-control" name="range">
-								<option value="t" <c:out value="${pghdlM.mpgvo.range eq 't' ? 'selected' : '' }"/>>상품명</option>
-								<option value="p" <c:out value="${pghdlM.mpgvo.range eq 'p' ? 'selected' : '' }"/>>가격</option>
+							<select class="form-control" name="range" style="margin-left:180px;">
+								<option value="t" <c:out value="${pghdl.mpgvo.range eq 't' ? 'selected' : '' }"/>>상품명</option>
+								<option value="p" <c:out value="${pghdl.mpgvo.range eq 'p' ? 'selected' : '' }"/>>가격</option>
 							</select>&nbsp;&nbsp; 
-							<input class="form-control" type="text"	placeholder="검색어 입력" name="keyword" value="${pghdlM.mpgvo.keyword }"> <input type="hidden"	name="mno" value="${pghdlM.mpgvo.mno }"> &nbsp;&nbsp;
+							<input class="form-control" type="text"	placeholder="검색어 입력" name="keyword" value="${pghdl.mpgvo.keyword }"> 
+							<input type="hidden" name="mno" value="${pghdl.mpgvo.mno }"> &nbsp;&nbsp;
 							<button type="submit" class="btn-sm btn-danger detailBtn">검색</button>
 						</form>
 					</div>

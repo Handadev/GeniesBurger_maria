@@ -6,16 +6,6 @@
 		<if test="range != null">
 			<trim prefix="and">
 				<choose>
-					<when test="range == 'en'.toString()">
-						email like concat('%',#{keyword},'%') or 
-						name like concat('%',#{keyword},'%')
-					</when>
-					<when test="range == 'e'.toString()">
-						email like concat('%',#{keyword},'%')
-					</when>
-					<when test="range == 'n'.toString()">
-						name like concat('%',#{keyword},'%')
-					</when>
 					<when test="range == 't'.toString()">
 						title like concat('%',#{keyword},'%')
 					</when>
@@ -35,8 +25,8 @@
 
 	<select id="totalList" resultType="purvo">
 		<![CDATA[
- 		select * 
- 		from V_MEMBER_PUR where purno > 0 
+		select * 
+		from V_MEMBER_PUR where purno > 0 
  		]]>
 		<include refid="search"></include>
 		<![CDATA[		
@@ -57,11 +47,17 @@
 	</select>
 
 	<select id="tc" parameterType="mpgvo" resultType="int">
+	 <![CDATA[
       select count(purno) FROM tbl_purchase WHERE purno > 0
+      ]]> 
+      <include refid="search"/>
    </select>
    
-   <select id="tcMember" parameterType="mpgvo" resultType="int">
+   <select id="tcMember" parameterType="hashmap" resultType="int">
+   			<![CDATA[
 			select count(purno) FROM tbl_purchase WHERE purno > 0 and mno=#{mno}
+			 ]]> 
+			<include refid="search"/>
    </select>
    
    <select id="dateSales" parameterType="String" resultType="int">

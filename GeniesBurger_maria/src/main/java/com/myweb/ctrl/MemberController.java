@@ -1,5 +1,7 @@
 package com.myweb.ctrl;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 
@@ -155,9 +157,18 @@ public class MemberController {
 
 	@GetMapping("/list")
 	public void list(Model model, MemberPageVO mpgvo) {
-		model.addAttribute("mList", msv.getList(mpgvo));
+//		int totalCount = msv.getTotalCount(mpgvo);
+//		model.addAttribute("pghdl", new MemberPagingHandler(totalCount, mpgvo));
+//		model.addAttribute("mList", msv.getList(mpgvo));
+		
 		int totalCount = msv.getTotalCount(mpgvo);
 		model.addAttribute("pghdl", new MemberPagingHandler(totalCount, mpgvo));
+		
+		int pageIndex = (mpgvo.getPageIndex()-1) * mpgvo.getCountPerPage();
+		mpgvo.setPageIndex(pageIndex);
+		
+		List<MemberVO> list = msv.getList(mpgvo);
+		model.addAttribute("mList", list);
 	}
 
 	@ResponseBody

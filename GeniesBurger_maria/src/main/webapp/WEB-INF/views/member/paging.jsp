@@ -9,14 +9,18 @@
 				<c:if test="${pghdl.pBtn }">
 					<li>
 						<a href="/member/list?pageIndex=${pghdl.fPageIndex-1 }
-						&countPerPage=${pghdl.mpgvo.countPerPage}">
+						&countPerPage=${pghdl.mpgvo.countPerPage}
+						&range=${pghdl.mpgvo.range}
+						&keyword=${pghdl.mpgvo.keyword}">
 						&lt;</a>
 					</li>
 				</c:if>
 				<c:forEach begin="${pghdl.fPageIndex }" end="${pghdl.lPageIndex }" var="i">
-					<li class=" ${pghdl.mpgvo.pageIndex == i ? 'active' : ''}">
+					<li class=" ${pghdl.mpgvo.pageIndex == (i - 1) * pghdl.mpgvo.countPerPage ? 'active' : ''}">
 						<a href="/member/list?pageIndex=${i }
-						&countPerPage=${pghdl.mpgvo.countPerPage}">
+						&countPerPage=${pghdl.mpgvo.countPerPage}
+						&range=${pghdl.mpgvo.range}
+						&keyword=${pghdl.mpgvo.keyword}">
 						${i }
 					</a>
 					</li>
@@ -24,7 +28,9 @@
 				<c:if test="${pghdl.nBtn }">
 					<li>
 						<a href="/member/list?pageIndex=${pghdl.lPageIndex+1 } 
-						&countPerPage=${pghdl.mpgvo.countPerPage}">
+						&countPerPage=${pghdl.mpgvo.countPerPage}
+						&range=${pghdl.mpgvo.range}
+						&keyword=${pghdl.mpgvo.keyword}">
 						&gt;</a></li>
 				</c:if>
 			</ul>

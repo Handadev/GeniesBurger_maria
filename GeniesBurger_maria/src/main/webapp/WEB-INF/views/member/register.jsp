@@ -59,6 +59,7 @@
 				<option value="어느 나라에 살고 싶습니까?">어느 나라에 살고 싶습니까?</option>
 				<option value="어렸을 때 별명이 무엇이었습니까?">어렸을 때 별명이 무엇이었습니까?</option>
 				<option value="가장 좋아하는 동물은 무엇입니까?">가장 좋아하는 동물은 무엇입니까?</option>
+				<option value="how are you?">how are you?</option>
 			</select>
 		</div>
 		<div class="form-group">

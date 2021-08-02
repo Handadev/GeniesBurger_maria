@@ -70,7 +70,7 @@
 	</select>
    
    <update id="mod" parameterType="mvo">
-      update tbl_member set    pwd=#{pwd}, name=#{name}, 
+      update tbl_member set pwd=#{pwd}, name=#{name}, 
       mobile=#{mobile}, address=#{address}, birthday=#{birthday} 
       where email=#{email}
    </update>

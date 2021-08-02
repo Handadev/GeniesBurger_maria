@@ -6,27 +6,35 @@
 	<div class="col text-center">
 		<div class="block-27">
 			<ul>
-				<c:if test="${pghdlM.pBtn }">
+				<c:if test="${pghdl.pBtn }">
 					<li>
 						<a href="/cart/purchaseListMember?
-						pageIndex=${pghdlM.fPageIndex-1 }
-						&countPerPage=${pghdlM.mpgvo.countPerPage}
-						&mno=${pghdlM.mpgvo.mno}">
+						pageIndex=${pghdl.fPageIndex-1 }
+						&countPerPage=${pghdl.mpgvo.countPerPage}
+						&mno=${pghdl.mpgvo.mno}
+						&range=${pghdl.mpgvo.range}
+						&keyword=${pghdl.mpgvo.keyword}">
 						&lt;</a>
 					</li>
 				</c:if>
-				<c:forEach begin="${pghdlM.fPageIndex }" end="${pghdlM.lPageIndex }" var="i">
-					<li class=" ${pghdlM.mpgvo.pageIndex == i ? 'active' : ''}">
+				<c:forEach begin="${pghdl.fPageIndex }" end="${pghdl.lPageIndex }" var="i">
+					<li class=" ${pghdl.mpgvo.pageIndex == (i - 1) * pghdl.mpgvo.countPerPage ? 'active' : ''}">
 						<a href="/cart/purchaseListMember?pageIndex=${i }
-						&countPerPage=${pghdlM.mpgvo.countPerPage}&mno=${pghdlM.mpgvo.mno}">
+						&countPerPage=${pghdl.mpgvo.countPerPage}
+						&mno=${pghdl.mpgvo.mno}
+						&range=${pghdl.mpgvo.range}
+						&keyword=${pghdl.mpgvo.keyword}">
 						${i }
 					</a>
 					</li>
 				</c:forEach>
-				<c:if test="${pghdlM.nBtn }">
+				<c:if test="${pghdl.nBtn }">
 					<li>
-						<a href="/cart/purchaseListMember?pageIndex=${pghdlM.lPageIndex+1 } 
-						&countPerPage=${pghdlM.mpgvo.countPerPage}&mno=${pghdlM.mpgvo.mno}">
+						<a href="/cart/purchaseListMember?pageIndex=${pghdl.lPageIndex+1 } 
+						&countPerPage=${pghdl.mpgvo.countPerPage}
+						&mno=${pghdl.mpgvo.mno}
+						&range=${pghdl.mpgvo.range}
+						&keyword=${pghdl.mpgvo.keyword}">
 						&gt;</a></li>
 				</c:if>
 			</ul>

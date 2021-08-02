@@ -68,7 +68,14 @@ public class PurchaseDAO implements PurchaseDAORule {
 	@Override
 	public int getTotalCount(MemberPageVO mpgvo, int mno) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("mpgvo", mpgvo);
+		String range = mpgvo.getRange();
+		String keyword = mpgvo.getKeyword();
+		int pageIndex = mpgvo.getPageIndex();
+		int countPerPage = mpgvo.getCountPerPage();
+		map.put("range", range);
+		map.put("keyword", keyword);
+		map.put("pageIndex", pageIndex);
+		map.put("countPerPage", countPerPage);
 		map.put("mno", mno);
 		return sql.selectOne(NS+"tcMember", map);
 	}

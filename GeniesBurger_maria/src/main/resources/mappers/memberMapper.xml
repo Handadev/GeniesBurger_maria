@@ -48,6 +48,7 @@
       <![CDATA[
 			select count(mno) FROM TBL_MEMBER WHERE mno > 0
       ]]>  
+			<include refid="search"/>
    </select>
    <select id="login" parameterType="mvo" resultType="mvo">
       select * from tbl_member where email=#{email} and pwd=#{pwd}

@@ -18,7 +18,7 @@ import com.myweb.persistence.productfile.ProductFileDAORule;
 
 import net.coobird.thumbnailator.Thumbnails;
 
-@Component
+
 public class ProductFileProcessor {
 	private static Logger logger = LoggerFactory.getLogger(ProductFileProcessor.class);
 	
